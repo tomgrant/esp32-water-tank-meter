@@ -1,0 +1,72 @@
+esphome:
+  name: "water-tank"
+  friendly_name: Water tank
+
+esp32:
+  board: nodemcu-32s
+  framework:
+    type: arduino
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+  encryption:
+    key: !secret api_encryption_key
+
+ota:
+  password: !secret ota_password
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  manual_ip:
+    static_ip: 192.168.1.207
+    gateway: 192.168.1.1
+    subnet: 255.255.255.0
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "Water-Tank Fallback Hotspot"
+    password: "Xhq15gH2lLFx"
+
+captive_portal:
+    
+sensor:
+  - platform: ultrasonic
+    trigger_pin: GPIO14
+    echo_pin: GPIO25
+    name: "Distance Sensor"
+    update_interval: 2s
+    id: distance_sensor
+
+  - platform: template
+    name: "Water level percentage"
+    lambda: |-
+      float x = id(distance_sensor).state;
+      float empty = 1.84;  # Distance from the sensor to the bottom of the tank in metres (empty state)
+      float full = 0.15; # Distance from the sensor to the top of the water in the tank in metres (full state)
+      float percentage = 100.0 - ((x - full) / (empty - full) * 100.0);
+      return percentage;
+    filters:
+      - lambda: return x;
+    update_interval: 2s
+    unit_of_measurement: "%"
+    id: water_level_percentage
+
+  - platform: template
+    name: "Water level"
+    lambda: |-
+      float capacity = 3310.0; # Your water tank's total capacity in Litres
+      float water_percentage = id(water_level_percentage).state;
+      float current_capacity = (water_percentage / 100.0) * capacity;
+      return current_capacity;
+    device_class: VOLUME_STORAGE
+    filters:
+      - lambda: return x;
+    update_interval: 2s
+    unit_of_measurement: "L"
+
+
+
