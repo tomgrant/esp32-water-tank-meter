@@ -45,8 +45,8 @@ sensor:
     name: "Water level percentage"
     lambda: |-
       float x = id(distance_sensor).state;
-      float empty = 1.84;  # Distance from the sensor to the bottom of the tank in metres (empty state)
-      float full = 0.15; # Distance from the sensor to the top of the water in the tank in metres (full state)
+      float empty = 1.84; // Distance from the sensor to the bottom of the tank in metres (empty state)
+      float full = 0.15; // Distance from the sensor to the top of the water in the tank in metres (full state)
       float percentage = 100.0 - ((x - full) / (empty - full) * 100.0);
       return percentage;
     filters:
@@ -58,7 +58,7 @@ sensor:
   - platform: template
     name: "Water level"
     lambda: |-
-      float capacity = 3310.0; # Your water tank's total capacity in Litres
+      float capacity = 3310.0; // Your water tank's total capacity in Litres
       float water_percentage = id(water_level_percentage).state;
       float current_capacity = (water_percentage / 100.0) * capacity;
       return current_capacity;
