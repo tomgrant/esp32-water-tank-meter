@@ -66,7 +66,7 @@ sensor:
       return current_capacity;
     device_class: VOLUME_STORAGE
     filters:
-      - lambda: return current_capacity;
+      - lambda: return x;
     update_interval: 15s
     unit_of_measurement: "L"
 
