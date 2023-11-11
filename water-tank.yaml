@@ -50,7 +50,9 @@ sensor:
       float percentage = 100.0 - ((x - full) / (empty - full) * 100.0);
       return percentage;
     filters:
-      - lambda: return x;
+      - sliding_window_moving_average:
+          window_size: 15
+          send_every: 15
     update_interval: 2s
     unit_of_measurement: "%"
     id: water_level_percentage
@@ -64,9 +66,8 @@ sensor:
       return current_capacity;
     device_class: VOLUME_STORAGE
     filters:
-      - lambda: return x;
-    update_interval: 2s
+      - lambda: return current_capacity;
+    update_interval: 15s
     unit_of_measurement: "L"
-
 
 
